@@ -1,5 +1,7 @@
 'use strict';
 
+
+
 angular.module('myApp.street4fit', ['ngRoute'])
 
 .config(['$routeProvider', function($routeProvider) {
@@ -14,6 +16,52 @@ angular.module('myApp.street4fit', ['ngRoute'])
 }])
 
 .controller('AdminCtrl', ['$scope', '$firebaseArray',function($scope,$firebaseArray) {
+ var ref= firebase.database().ref('users');
+ $scope.users= $firebaseArray(ref);
+
+ $scope.removeUser= function(user){
+  $scope.users.$remove(user);
+
+ }
+
+ $scope.editFormShow=false;
+  $scope.showEditForm= function(user){
+  $scope.editFormShow=true;
+  $scope.id = user.id;
+  $scope.inputName = user.name;
+  $scope.inputFirst = user.first;
+  $scope.inputEmailFirst = user.email;
+  $scope.phone = user.phone;
+  $scope.inputMessage = user.message;
+
+ }
+// FIX THIS !!! THE ID IS UNDEFINED THAT IS WHY IT FAILS
+ $scope.editUser= function(){
+  var id = $scope.id;
+  var record = $scope.users.$getRecord(last_id);
+  record.name = $scope.inputName;
+  record.first= $scope.inputFirst;
+  record.email= $scope.inputEmailFirst;
+  record.phone= $scope.phone ;
+  record.message= $scope.inputMessage;
+
+  // save
+
+  $scope.users.$save(record).then(function(ref){
+    console.log(ref.key);
+  }); 
+
+   // clean up the form
+      $scope.inputName = '';
+      $scope.inputFirst= '';
+      $scope.inputEmailFirst= '';
+      $scope.phone= '';
+      $scope.inputMessage= '';
+
+
+ }
+
+  
 
 }])
 
@@ -21,7 +69,7 @@ angular.module('myApp.street4fit', ['ngRoute'])
 
 
   //var ref= new Firebase("https://street4fit-bbee8.firebaseio.com/");
- 
+ $scope.users=firebase.database().ref('users/');
 
   
 
@@ -56,6 +104,8 @@ angular.module('myApp.street4fit', ['ngRoute'])
 //                 console.log('Authentication failure');
 //             });
 //   }
+
+
 
 
 	$scope.addUser = function(){
