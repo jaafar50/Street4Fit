@@ -4,7 +4,43 @@
 
 angular.module('myApp.street4fit', ['ngRoute'])
 
+.directive("passwordVerify", function() {
+   return {
+      require: "ngModel",
+      scope: {
+        passwordVerify: '='
+      },
+      link: function(scope, element, attrs, ctrl) {
+        scope.$watch(function() {
+            var combined;
+
+            if (scope.passwordVerify || ctrl.$viewValue) {
+               combined = scope.passwordVerify + '_' + ctrl.$viewValue; 
+            }                    
+            return combined;
+        }, function(value) {
+            if (value) {
+                ctrl.$parsers.unshift(function(viewValue) {
+                    var origin = scope.passwordVerify;
+                    if (origin !== viewValue) {
+                        ctrl.$setValidity("passwordVerify", false);
+                        return undefined;
+                    } else {
+                        ctrl.$setValidity("passwordVerify", true);
+                        return viewValue;
+                    }
+                });
+            }
+        });
+     }
+   };
+})
+
 .config(['$routeProvider', function($routeProvider) {
+  $routeProvider.when('/signin', {
+    templateUrl: 'street4fit/signin.html',
+    controller: 'SigninCtrl'
+  })
   $routeProvider.when('/admin', {
     templateUrl: 'street4fit/admin.html',
     controller: 'AdminCtrl'
@@ -28,6 +64,8 @@ angular.module('myApp.street4fit', ['ngRoute'])
   $scope.showEditForm= function(user){
   $scope.editFormShow=true;
   $scope.id = user.id;
+  console.log("the user id at editshow is");
+  console.log(user.id);
   $scope.inputName = user.name;
   $scope.inputFirst = user.first;
   $scope.inputEmailFirst = user.email;
@@ -38,7 +76,7 @@ angular.module('myApp.street4fit', ['ngRoute'])
 // FIX THIS !!! THE ID IS UNDEFINED THAT IS WHY IT FAILS
  $scope.editUser= function(){
   var id = $scope.id;
-  var record = $scope.users.$getRecord(last_id);
+  var record = $scope.users.$getRecord(id);
   record.name = $scope.inputName;
   record.first= $scope.inputFirst;
   record.email= $scope.inputEmailFirst;
@@ -60,6 +98,25 @@ angular.module('myApp.street4fit', ['ngRoute'])
 
 
  }
+
+  
+
+}])
+
+.controller('SigninCtrl', ['$scope', '$firebaseArray',function($scope,$firebaseArray) {
+
+  $scope.signInUser = function(){
+      firebase.auth().signInWithEmailAndPassword($scope.email, $scope.password).catch(function(error) {
+      // Handle Errors here.
+      var errorCode = error.code;
+      var errorMessage = error.message;
+    // ...
+    });
+     
+
+  }
+
+
 
   
 
@@ -114,14 +171,22 @@ angular.module('myApp.street4fit', ['ngRoute'])
       name: $scope.inputName,
       first: $scope.inputFirst,
       email: $scope.inputEmailFirst,
+      password: $scope.inputPassword,
       phone: $scope.phone,
       message: $scope.inputMessage
     }). then(function(){
+      firebase.auth().createUserWithEmailAndPassword($scope.inputEmailFirst, $scope.inputPassword).catch(function(error) {
+      // Handle Errors here.
+      var errorCode = error.code;
+      var errorMessage = error.message;
+       // ...
+      });
      
       // clean up the form
       $scope.inputName = '';
       $scope.inputFirst= '';
       $scope.inputEmailFirst= '';
+      $scope.inputPassword= '';
       $scope.phone= '';
       $scope.inputMessage= '';
 
