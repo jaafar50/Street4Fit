@@ -37,6 +37,10 @@ angular.module('myApp.street4fit', ['ngRoute'])
 })
 
 .config(['$routeProvider', function($routeProvider) {
+  $routeProvider.when('/home', {
+    templateUrl: 'street4fit/home.html',
+    controller: 'HomeCtrl'
+  })
   $routeProvider.when('/signin', {
     templateUrl: 'street4fit/signin.html',
     controller: 'SigninCtrl'
@@ -45,9 +49,9 @@ angular.module('myApp.street4fit', ['ngRoute'])
     templateUrl: 'street4fit/admin.html',
     controller: 'AdminCtrl'
   })
-  $routeProvider.when('/street4fit', {
-    templateUrl: 'street4fit/street4fit.html',
-    controller: 'Street4fitCtrl'
+  $routeProvider.when('/signup', {
+    templateUrl: 'street4fit/signup.html',
+    controller: 'SignupCtrl'
   });
 }])
 
@@ -103,6 +107,12 @@ angular.module('myApp.street4fit', ['ngRoute'])
 
 }])
 
+.controller('HomeCtrl', ['$scope', '$firebaseArray',function($scope,$firebaseArray) {
+ var ref= firebase.database().ref('users');
+ $scope.users= $firebaseArray(ref);
+
+}])
+
 .controller('SigninCtrl', ['$scope', '$firebaseArray',function($scope,$firebaseArray) {
 
   $scope.signInUser = function(){
@@ -117,12 +127,9 @@ angular.module('myApp.street4fit', ['ngRoute'])
   }
 
 
-
-  
-
 }])
 
-.controller('Street4fitCtrl', ['$scope', '$firebaseArray',function($scope,$firebaseArray) {
+.controller('SignupCtrl', ['$scope', '$firebaseArray',function($scope,$firebaseArray) {
 
 
   //var ref= new Firebase("https://street4fit-bbee8.firebaseio.com/");

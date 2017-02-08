@@ -9,5 +9,5 @@ angular.module('myApp', [
 ]).
 config(['$routeProvider', function($routeProvider) {
 
-  $routeProvider.otherwise({redirectTo: '/street4fit'});
+  $routeProvider.otherwise({redirectTo: '/home'});
 }]);
